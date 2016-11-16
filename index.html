@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	
+	<meta charset="UTF-8" >
+	<meta name="viewport" content=" initial-scale=0.610, maximum-scale=1.01, user-scalable=no">
+    <title>game</title>
+</head>
+<body style="background-color: lightgreen; position:fixed" onmousemove="mousemove(event)" >
+<br>
+    <canvas id="canvas" height="500"   width="500" style="border: 5px solid brown;">
+	
+    </canvas>
+<script src="virtualjoystick.js"></script>
+      
+<script>
+joystick = new VirtualJoystick({
+                      mouseSupport: false,
+		      stationaryBase: true,
+                      baseX: 300,
+                      baseY: 560,
+		      limitStickTravel: true,
+		      stickRadius: 70
+                   });
+
+
+
+function animate(){
+   
+   requestAnimationFrame(animate);
+
+		
+	if( joystick.down() && myobject.y<myscreen.height-30 )
+        
+            myobject.y++;
+if(  joystick.up() && myobject.y>10)
+        
+            myobject.y--;
+if( joystick.right() && myobject.x<myscreen.width-100 )
+                            myobject.x++;
+			
+		if(( joystick.left()) && myobject.x>10)   
+                    myobject.x--;
+
+
+
+}
+    function mousemove(event)
+    {
+	if(event.pageX<myscreen.width-100 && event.pageX>10 && event.pageY<myscreen.height-30 && event.pageY>10)
+        {myobject.x=event.pageX;
+		
+        myobject.y=event.pageY;
+		}	
+	}
+
+    function  upval(event) {
+if( myobject.y<myscreen.Height-30 && myobject.y>10)
+{
+        if(event.which==65 ||event.which==40)
+            myobject.y++;
+
+        if(event.which==68 || event.which==38)
+            myobject.y--;
+}
+if( myobject.x<myscreen.width-100 && myobject.x>10 )
+{
+        if(event.which==39)
+            myobject.x++;
+
+        if( event.which==37)
+            myobject.x--;
+} 
+ }
+    var diesound,gamemusic;
+    var myobject,myobject2,myscreen,myobstacle=[],myscore,mybg;
+    var flag=0;
+	function checkStart(){
+                  myscreenLoading=new setattr(myscreen.width/2,myscreen.height/2,"black","30px","Consolas","text");
+
+		var everythingLoaded = setInterval(function() 
+		{
+  myscreen.clearscreen();
+  if (/loaded|complete/.test(document.readyState)) {
+    clearInterval(everythingLoaded);
+	
+	startgame();
+     // this is the function that gets called when everything is loaded
+  
+  }
+  else{
+myscreenLoading.text="Game is Loading.PleaseWait";
+myscreenLoading.updateobject();
+
+  }
+}, 10);
+}
+function loadgame()
+{
+document.getElementById('loadID').style.visibility="hidden";
+
+		mybg=new setattr(0,0,"Gameassets/Bg.png",500,500,"background");
+        myobject=new setattr(10,120,"Gameassets/fb(1).png",80,80,"gifimage");
+        myscore=new setattr(280,40,"black","30px","Consolas","text");
+//        myobject2=new setattr(50,120,"red",30,30);
+        diesound=new soundplay("smb_mariodie.wav","sound");
+        gamemusic=new soundplay("superdubstep.mp3","music");
+checkStart();
+}
+	function startgame() {
+        //  myobstacle[0]=new setattr(100,150,"green",10,120);
+		
+		if(flag==0)
+		{
+ 		
+
+				   animate();	
+        gamemusic.play();
+        myscreen.run();
+        flag=1;
+		}
+		//     setInterval(updatescreen,20);
+    }
+    function soundplay(src,type)
+    {
+	 this.sound=document.createElement("audio");
+        this.type=type;
+        this.sound.src=src;
+        this.sound.setAttribute("preload","auto");
+        if(this.type=="sound")
+            this.sound.setAttribute("controls","none");
+        else if(this.type=="music") {
+            this.sound.setAttribute("controls", "loop");
+            this.sound.loop=true;
+        }
+        this.sound.style.display="none";
+        document.body.appendChild(this.sound);
+        this.play=function () {
+            this.sound.play();
+        }
+        this.stop=function () {
+            this.sound.pause();
+        }
+
+
+    }
+    /*  pausegame()
+     {
+     myscreen.stopgame();
+     ctx.save();
+     }
+     resumegame()
+     {
+     setInterval(updatescreen,20);
+     }*/
+    myscreen={
+        canvas:document.getElementById("canvas"),
+        ctx:this.canvas.getContext("2d"),
+        width:this.canvas.getAttribute("width"),
+        height:this.canvas.getAttribute("height"),
+        clearscreen:function()
+        {
+            this.ctx.clearRect(0,0,this.width,this.height);
+        },
+        run:function () {
+            this.canvas.style.cursor="none";
+            this.frameNo=0;
+            this.interval=setInterval(updatescreen,15);
+            window.addEventListener("keydown",   function flagup(event)
+            {
+                myscreen.arr=(myscreen.arr || []);
+                myscreen.arr[event.keyCode]=true;
+            })
+            window.addEventListener("keyup",
+                    function  flagdown(event) {
+                        myscreen.arr[event.keyCode]=false;
+                    })
+        },
+        stopgame:function () {
+            clearInterval(this.interval);
+        }
+    };
+    function checkInterval(n) {
+        if((myscreen.frameNo/n)%1==0)
+            return true;
+        return false;
+    }
+    function  setattr(x,y,color,width,height,type) {
+	this.addY=0;
+       this.flagY=-1;
+        this.x=x;
+        this.type=type;
+		this.controls=0;
+		if( type=="gifimage")
+		{
+		this.gifimage=["Gameassets/fb(1).png","Gameassets/fb(2).png","Gameassets/fb(3).png","Gameassets/fb(4).png","Gameassets/fb(5).png","Gameassets/fb(6).png","Gameassets/fb(7).png","Gameassets/fb(8).png","Gameassets/fb(9).png","Gameassets/fb(10).png"];
+		this.pos=0;
+		this.controls=1;
+            this.image=new Image();
+            this.image.src=this.gifimage[this.pos];
+		
+		}
+        if(type=="image" || type=="background" )
+        {
+            this.image=new Image();
+            this.image.src=color;
+        }
+
+		if(type!="background")
+		this.controls=1;
+        this.y=y;
+        this.color=color;
+        this.width=width;
+        this.height=height;
+        this.updateobject=function () {
+            // var xx=window.event.which;
+            /*      if(this.x>myscreen.width)
+             this.x=0;
+             else if(this.x<0)
+             this.x=myscreen.width;
+             */
+            if(this.type=="text")
+            {
+                myscreen.ctx.font=this.width+" "+this.height;
+                myscreen.ctx.fillStyle=this.color;
+                myscreen.ctx.fillText(this.text,this.x,this.y);
+            }
+			else if(this.type=="gifimage")
+			{
+			
+            this.image.src=this.gifimage[this.pos];
+			   myscreen.ctx.drawImage(this.image,this.x,this.y,this.width,this.height);
+              this.pos=(this.pos+1);
+			  if(this.pos==10)
+			  this.pos=0;
+			}
+            else if(this.type=="image" || this.type=="background" )
+            {
+                myscreen.ctx.drawImage(this.image,this.x,this.y,this.width,this.height);
+                if(this.type=="background")
+                {
+                    myscreen.ctx.drawImage(this.image,this.x+this.width,this.y,this.width,this.height);
+
+                }
+            }
+            else {
+                myscreen.ctx.fillStyle = this.color;
+
+                myscreen.ctx.fillRect(this.x, this.y, this.width, this.height);
+            }
+        }
+        this.mymovement=function () {
+            if (this.type == "background") {
+                if (this.x == -this.width)
+                    this.x = 0;
+            }
+            else if(this.controls==0) {
+                if (myscreen.arr && myscreen.arr[37])
+                    this.x--;
+                if (myscreen.arr && myscreen.arr[39])
+                    this.x++;
+
+                if (myscreen.arr && myscreen.arr[38])
+                    this.y--;
+                if (myscreen.arr && myscreen.arr[40])
+                    this.y++;
+            }
+			else if(this.controls==1)
+			{
+		if(  this.y<myscreen.height-30 )
+				if (myscreen.arr && myscreen.arr[40])
+                    this.y++;
+
+		if(   this.y>10)
+                if (myscreen.arr && myscreen.arr[38])
+                    this.y--;
+		if(  this.x<myscreen.width-100 )
+                if (myscreen.arr && myscreen.arr[39])
+                    this.x++;
+					
+		if(  this.x>10)
+                
+			    if (myscreen.arr && myscreen.arr[37])
+                    this.x--;
+		
+            
+
+			}
+        }
+        this.checkcrash=function (otherobs) {
+            var myleft=this.x;
+            var myright=this.x+this.width;
+            var mytop=this.y;
+            var mybottom=this.y+this.height;
+            var otherleft=otherobs.x;
+            var otherright=otherobs.x+otherobs.width;
+            var othertop=otherobs.y;
+            var otherbottom=othertop+otherobs.height;
+            var status=true;//if true thn it means its crashing :/ :(
+            if((mytop>(otherbottom-25)) || (mybottom<othertop+40) || (myleft+15>otherright) || (myright-10<otherleft)) {
+                status = false;
+            }        return status;
+            /*var crash = true;
+             if ((mybottom < othertop) ||
+             (mytop > otherbottom) ||
+             (myright < otherleft) ||
+             (myleft > otherright)) {
+             crash = false;
+             }
+             return crash;*/
+        }
+    }
+    var counter=0,flagger=0;
+    function updatescreen() {
+
+        myscreen.clearscreen();
+        for (var i = 0; i < myobstacle.length; i++)
+            if (myobject.checkcrash(myobstacle[i])) {
+                /*myobject.image.src="Gameassets/db.png";
+				myobject.type="image";
+				myscreen.ctx.drawImage(myobject.image,myobject.x,myobject.y,myobject.width,myobject.height);
+                */
+				//myobject.image.src="Gameassets/db.png";
+				//myobject.updateobject();
+                gamemusic.stop();
+                diesound.play();
+                myscreen.stopgame();
+       myscore.updateobject();
+                return;
+
+            }
+        mybg.x--;
+        mybg.mymovement();
+        mybg.updateobject();
+
+        myscreen.frameNo++;
+        var inter;
+		if(myscreen.frameNo<300)
+		{
+		
+		myscreen.stopgame();
+		myscreen.interval=setInterval(updatescreen,23);
+		}
+        if(myscreen.frameNo>300 )
+		{
+		myscreen.stopgame();
+		myscreen.interval=setInterval(updatescreen,20);
+		flagger=1;
+		}
+		if(myscreen.frameNo<300)
+            inter=150;
+        if(myscreen.frameNo>300 && myscreen.frameNo<=600)
+            inter=120;
+        if(myscreen.frameNo>=800)
+          { inter=100;
+			
+		myscreen.stopgame();
+		myscreen.interval=setInterval(updatescreen,18);
+			}
+        if(myscreen.frameNo>=1000)
+           { inter=80;
+		   
+		myscreen.stopgame();
+		myscreen.interval=setInterval(updatescreen,15);
+		   }
+        if(myscreen.frameNo>=1360)
+            {inter=75;
+			
+		myscreen.stopgame();
+		myscreen.interval=setInterval(updatescreen,14);
+			}
+        if(myscreen.frameNo>=1800)
+            {inter=70;
+			
+		myscreen.stopgame();
+		myscreen.interval=setInterval(updatescreen,13);
+			}
+        var arr=["red","green","purple","lightbrown","yellow"];
+
+        if (myscreen.frameNo == 1 || checkInterval(inter) ) {
+            var x=myscreen.width;
+            var height=myscreen.height+100;
+            var gap=110+Math.round(Math.random()*70);
+            var h1=Math.round(Math.random()*300);
+            var h2=h1+gap;
+            myobstacle.push(new setattr(x, 0, arr[counter], 10, h1));
+            myobstacle.push(new setattr(x,h2,arr[(counter++)],10,height-h2));
+            counter=counter%5;
+        }
+
+
+        for (var i = 0; i < myobstacle.length; i++) {
+
+            myobstacle[i].x--;
+			if(myobstacle[i].flagY==-1)
+			myobstacle[i].addY--;
+			else
+			myobstacle[i].addY++;
+			if(myobstacle[i].addY<=-50 || myobstacle[i].addY>=50)
+myobstacle[i].flagY*=-1;		
+		myobstacle[i].y+=myobstacle[i].flagY;
+			
+            myobstacle[i].updateobject();
+            //  if(myobstacle[i].x<-50) isse karne se screen flicker hote hue dikhrha so remove it :P :P
+
+            //         myobstacle.shift();
+        }
+
+        myscore.text="Score :: "+myscreen.frameNo*2;
+        myscore.updateobject();
+
+        myobject.mymovement();
+        myobject.updateobject();
+
+        
+
+    }
+
+
+</script>
+<br>
+<button onclick="loadgame()" id="loadID">StartGame</button>
+    <button onclick="window.open('game.html','_self')">Restart</button>
+    <p>Use up,down,left and right or use Mouse to move the Bird or use touchpad :) :) Enjoy</p>
+	
+  <img src="Gameassets/fb(1).png" style="visibility:hidden" width=0 height=0>
+  
+  <img src="Gameassets/fb(2).png" style="visibility:hidden" width=0 height=0>
+  <img src="Gameassets/fb(3).png" style="visibility:hidden" width=0 height=0>
+  <img src="Gameassets/fb(4).png" style="visibility:hidden" width=0 height=0>
+  <img src="Gameassets/fb(5).png" style="visibility:hidden" width=0 height=0>
+  <img src="Gameassets/fb(6).png" style="visibility:hidden" width=0 height=0>
+  <img src="Gameassets/fb(7).png" style="visibility:hidden" width=0 height=0>
+  <img src="Gameassets/fb(8).png" style="visibility:hidden" width=0 height=0>
+  <img src="Gameassets/fb(9).png" style="visibility:hidden" width=0 height=0>
+  <img src="Gameassets/fb(10).png" style="visibility:hidden" width=0 height=0>
+      
+</body>
+</html>
